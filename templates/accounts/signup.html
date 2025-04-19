@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+{% block title %}회원가입{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>회원가입</h2>
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_username" class="form-label">아이디</label>
+        {{ form.username|add_class:"form-control" }}
+        {% if form.username.errors %}
+          <div class="text-danger small">{{ form.username.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_password1" class="form-label">비밀번호</label>
+        {{ form.password1|add_class:"form-control" }}
+        <div class="form-text">{{ form.password1.help_text }}</div>
+        {% if form.password1.errors %}
+          <div class="text-danger small">{{ form.password1.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_password2" class="form-label">비밀번호 확인</label>
+        {{ form.password2|add_class:"form-control" }}
+        {% if form.password2.errors %}
+          <div class="text-danger small">{{ form.password2.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_bio" class="form-label">자기소개</label>
+        {{ form.bio|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_account_number" class="form-label">계좌번호</label>
+        {{ form.account_number|add_class:"form-control" }}
+      </div>
+
+      <button type="submit" class="btn btn-primary">가입하기</button>
+    </form>
+  </div>
+{% endblock %}

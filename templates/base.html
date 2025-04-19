@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}중고거래 플랫폼{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- 네비게이션 바 -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/">🏪 중고거래</a>
+      <div class="d-flex">
+        <a class="nav-link me-2" href="/accounts/signup/">회원가입</a>
+        <a class="nav-link me-2" href="/accounts/login/">로그인</a>
+        <a class="nav-link" href="/accounts/logout/">로그아웃</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 본문 영역 -->
+  <div class="container mt-4">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}
+    <!-- 페이지별 내용이 여기에 들어갑니다 -->
+    {% endblock %}
+  </div>
+
+  <!-- Bootstrap JS (선택) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
