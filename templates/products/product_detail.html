@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 800px;">
+  <h2 class="mb-4">{{ product.name }}</h2>
+
+  {% if product.productimage_set.first %}
+    <img src="{{ product.productimage_set.first.image.url }}" class="img-fluid mb-4" alt="상품 이미지">
+  {% endif %}
+
+  <p><strong>가격:</strong> {{ product.price|intcomma }}원</p>
+  <p><strong>설명:</strong> {{ product.description }}</p>
+  <p class="text-muted"><strong>등록일:</strong> {{ product.created_at|date:"Y.m.d H:i" }}</p>
+  <p><strong>판매자:</strong> {{ product.user.username }}</p>
+</div>
+{% endblock %}

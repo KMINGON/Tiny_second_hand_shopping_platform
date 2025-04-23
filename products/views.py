@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Product, ProductImage
 from .forms import ProductForm, ProductImageForm
 
 def product_list_view(request):
-    return render(request, 'products/list.html')
+    products = Product.objects.all().order_by('-created_at')
+    return render(request, 'products/product_list.html', {'products': products})
 
 @login_required
 def product_create_view(request):
@@ -30,4 +31,5 @@ def product_create_view(request):
     })
 
 def product_detail_view(request, id):
-    return render(request, 'products/detail.html', {'product_id': id})
+    product = get_object_or_404(Product, id=id)
+    return render(request, 'products/product_detail.html', {'product': product})

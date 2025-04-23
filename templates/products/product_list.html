@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}상품 목록{% endblock %}
+{% load humanize %}
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">전체 상품</h2>
+    <div class="row">
+      {% for product in products %}
+        <div class="col-md-4 mb-4">
+          <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark">
+            <div class="card h-100">
+              {% if product.productimage_set.first %}
+                <img src="{{ product.productimage_set.first.image.url }}" class="card-img-top" alt="상품 이미지">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description|truncatechars:60 }}</p>
+                <p class="card-text"><strong>{{ product.price|intcomma }}원</strong></p>
+                <p class="text-muted small">{{ product.created_at|date:"Y.m.d H:i" }}</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <p>등록된 상품이 없습니다.</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
