@@ -14,5 +14,15 @@
   <p><strong>설명:</strong> {{ product.description }}</p>
   <p class="text-muted"><strong>등록일:</strong> {{ product.created_at|date:"Y.m.d H:i" }}</p>
   <p><strong>판매자:</strong> {{ product.user.username }}</p>
+
+  {% if user == product.user %}
+  <div class="mt-3">
+    <a href="{% url 'product_edit' product.id %}" class="btn btn-primary">수정하기</a>
+    <form action="{% url 'product_delete' product.id %}" method="post" class="mt-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">삭제하기</button>
+      </form>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
