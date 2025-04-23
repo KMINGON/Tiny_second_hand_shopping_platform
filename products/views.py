@@ -1,10 +1,33 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Product, ProductImage
+from .forms import ProductForm, ProductImageForm
 
 def product_list_view(request):
     return render(request, 'products/list.html')
 
+@login_required
 def product_create_view(request):
-    return render(request, 'products/create.html')
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        image_form = ProductImageForm(request.POST, request.FILES)
+
+        if form.is_valid() and image_form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user
+            product.save()
+
+            image = image_form.cleaned_data['image']
+            ProductImage.objects.create(product=product, image=image)
+
+            return redirect('/')  # 또는 상품 목록으로 이동
+    else:
+        form = ProductForm()
+        image_form = ProductImageForm()
+    return render(request, 'products/product_create.html', {
+        'form': form,
+        'image_form': image_form,
+    })
 
 def product_detail_view(request, id):
     return render(request, 'products/detail.html', {'product_id': id})

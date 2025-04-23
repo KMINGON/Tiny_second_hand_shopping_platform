@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}상품 등록{% endblock %}
+{% load form_tags %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+  <h2>상품 등록</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.name|add_class:"form-control mb-3" }}
+    {{ form.description|add_class:"form-control mb-3" }}
+    {{ form.price|add_class:"form-control mb-3" }}
+    {{ image_form.image|add_class:"form-control mb-3" }}
+    <button type="submit" class="btn btn-primary">등록하기</button>
+  </form>
+</div>
+{% endblock %}
