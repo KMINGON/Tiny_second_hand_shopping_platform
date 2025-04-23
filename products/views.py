@@ -8,18 +8,23 @@ from django.db.models import Q
 
 def product_list_view(request):
     query = request.GET.get('q', '')
+    mine = request.GET.get('mine') == 'on'
+
     products = Product.objects.all()
 
     if query:
         products = products.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query)
+            Q(name__icontains=query) | Q(description__icontains=query)
         )
+
+    if mine and request.user.is_authenticated:
+        products = products.filter(user=request.user)
 
     products = products.order_by('-created_at')
     return render(request, 'products/product_list.html', {
         'products': products,
-        'query': query
+        'query': query,
+        'mine': mine
     })
 
 @login_required
