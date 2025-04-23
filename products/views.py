@@ -4,10 +4,23 @@ from .models import Product, ProductImage
 from .forms import ProductForm, ProductImageForm
 from django.http import HttpResponseForbidden
 from django.views.decorators.http import require_POST
+from django.db.models import Q
 
 def product_list_view(request):
-    products = Product.objects.all().order_by('-created_at')
-    return render(request, 'products/product_list.html', {'products': products})
+    query = request.GET.get('q', '')
+    products = Product.objects.all()
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+    products = products.order_by('-created_at')
+    return render(request, 'products/product_list.html', {
+        'products': products,
+        'query': query
+    })
 
 @login_required
 def product_create_view(request):
