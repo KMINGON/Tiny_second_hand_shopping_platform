@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}마이페이지{% endblock %}
+
+{% block content %}
+  <div class="container mt-5" style="max-width: 600px;">
+    <h2>마이페이지</h2>
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label">자기소개</label>
+        <textarea name="bio" class="form-control" rows="4">{{ user.bio }}</textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">계좌번호</label>
+        <input type="text" name="account_number" value="{{ user.account_number }}" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-primary">저장하기</button>
+    </form>
+
+    <hr>
+    <a href="{% url 'password_change' %}" class="btn btn-outline-secondary mt-3">비밀번호 변경</a>
+  </div>
+{% endblock %}
