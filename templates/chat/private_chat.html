@@ -105,11 +105,19 @@
     log.scrollTop = log.scrollHeight;
   };
 
-  // 신고 버튼 클릭 시 채팅 ID 설정
+  // 신고 모달 관련 코드
+  const reportModal = document.getElementById('reportModal');
+  const reportForm = document.getElementById('reportForm');
+  const reportMessageId = document.getElementById('reportMessageId');
+  const reportType = document.getElementById('reportType');
+  const reportDescription = document.getElementById('reportDescription');
+  
+  // 신고 버튼 클릭 이벤트
   document.querySelectorAll('.report-btn').forEach(button => {
     button.addEventListener('click', function() {
-      document.getElementById('report_chat_id').value = this.dataset.chatId;
-      document.getElementById('reportForm').action = `{% url 'chat:report_chat' 0 %}`.replace('0', this.dataset.chatId);
+      const messageId = this.dataset.messageId;
+      reportMessageId.value = messageId;
+      reportForm.action = "{% url 'reports:report_chat' message_id=0 %}".replace('0', messageId);
     });
   });
 </script>

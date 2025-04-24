@@ -25,7 +25,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),      # 회원 기능
     path('products/', include('products.urls')),      # 상품 기능
     path('chat/', include('chat.urls', namespace='chat')),  # 채팅 기능
-    path('reports/', include('reports.urls')),        # 신고 기능
+    path('', include('reports.urls')),        # 신고 기능
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
