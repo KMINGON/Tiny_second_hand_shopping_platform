@@ -74,7 +74,7 @@ def product_edit_view(request, id):
                 product.productimage_set.all().delete()
                 ProductImage.objects.create(product=product, image=image_form.cleaned_data['image'])
 
-            return redirect('product_detail', id=product.id)
+            return redirect('products:product_detail', id=product.id)
     else:
         form = ProductForm(instance=product)
         image_form = ProductImageForm()
@@ -99,4 +99,4 @@ def product_delete_view(request, id):
 
     # 상품 삭제
     product.delete()
-    return redirect('product_list')
+    return redirect('products:product_list')

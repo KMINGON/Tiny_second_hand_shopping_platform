@@ -4,7 +4,7 @@ from .models import Chat
 from accounts.models import CustomUser
 from django.db.models import Q
 from django.db import models
-from reports.models import ChatReport as ReportsChatReport
+from reports.models import ChatReport
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 
@@ -90,10 +90,10 @@ def report_chat_view(request, message_id):
     description = request.POST.get('description', '')
 
     # 중복 신고 방지
-    if ReportsChatReport.objects.filter(reporter=request.user, message=message).exists():
+    if ChatReport.objects.filter(reporter=request.user, message=message).exists():
         messages.warning(request, '이미 신고한 메시지입니다.')
     else:
-        ReportsChatReport.objects.create(
+        ChatReport.objects.create(
             reporter=request.user,
             message=message,
             reason=f"[{report_type}] {description}"
@@ -104,5 +104,5 @@ def report_chat_view(request, message_id):
 
 @login_required
 def my_reports_view(request):
-    chat_reports = ReportsChatReport.objects.filter(reporter=request.user).order_by('-reported_at')
+    chat_reports = ChatReport.objects.filter(reporter=request.user).order_by('-reported_at')
     return render(request, 'chat/my_reports.html', {'chat_reports': chat_reports})

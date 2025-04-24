@@ -5,6 +5,7 @@ from .models import CustomUser
 from products.models import Product
 from chat.models import Chat
 from django.db.models import Q
+from django.contrib.auth.views import LogoutView
 
 def signup_view(request):
     if request.method == 'POST':
@@ -21,8 +22,8 @@ def signup_view(request):
 def login_view(request):
     return render(request, 'accounts/login.html')
 
-def logout_view(request):
-    return render(request, 'accounts/logout.html')
+class CustomLogoutView(LogoutView):
+    next_page = '/'
 
 @login_required
 def mypage_view(request):

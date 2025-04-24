@@ -24,7 +24,10 @@
             {% if user == product.user %}
                 <div class="mt-4">
                     <a href="{% url 'products:product_edit' product.id %}" class="btn btn-primary">수정하기</a>
-                    <a href="{% url 'products:product_delete' product.id %}" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">삭제하기</a>
+                    <form method="POST" action="{% url 'products:product_delete' product.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">삭제하기</button>
+                    </form>
                 </div>
             {% else %}
                 <div class="mt-4">
