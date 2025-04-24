@@ -101,8 +101,3 @@ def report_chat_view(request, message_id):
         messages.success(request, '신고가 접수되었습니다.')
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
-
-@login_required
-def my_reports_view(request):
-    chat_reports = ChatReport.objects.filter(reporter=request.user).order_by('-reported_at')
-    return render(request, 'chat/my_reports.html', {'chat_reports': chat_reports})
