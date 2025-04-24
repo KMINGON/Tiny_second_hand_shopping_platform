@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}전체 채팅{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3 class="mb-3">전체 채팅방</h3>
+  <div id="chat-log" class="border p-3 mb-3" style="height: 300px; overflow-y: auto;">
+    {% for chat in chats %}
+      <div><strong>{% if chat.sender.id == user_id %}나{% else %}{{ chat.sender.username }}{% endif %}</strong>: {{ chat.message }}</div>
+    {% endfor %}
+  </div>
+
+  <div class="input-group">
+    <input id="chat-message-input" type="text" class="form-control" placeholder="메시지를 입력하세요">
+    <button id="chat-message-submit" class="btn btn-primary">보내기</button>
+  </div>
+</div>
+
+<script>
+  const senderId = parseInt('{{ user_id }}');
+  const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/global/');
+
+  chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const log = document.querySelector('#chat-log');
+    const sender = data.sender_id === senderId ? '나' : data.sender_username;
+    log.innerHTML += `<div><strong>${sender}</strong>: ${data.message}</div>`;
+    log.scrollTop = log.scrollHeight;
+  };
+
+  document.querySelector('#chat-message-submit').onclick = function() {
+    const input = document.querySelector('#chat-message-input');
+    const message = input.value;
+    if (message) {
+      chatSocket.send(JSON.stringify({
+        'message': message,
+        'sender_id': senderId,
+      }));
+      input.value = '';
+    }
+  };
+</script>
+{% endblock %}

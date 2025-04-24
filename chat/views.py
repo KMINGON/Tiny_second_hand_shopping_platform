@@ -48,17 +48,33 @@ def chat_list_view(request):
     chats = Chat.objects.filter(Q(sender=user) | Q(receiver=user))
 
     # 상대방 ID 기준 마지막 메시지 시간 기준 정렬
-    latest_chats = {}
-    for chat in chats.order_by('-created_at'):
-        other = chat.receiver if chat.sender == user else chat.sender
-        if other.id not in latest_chats:
-            latest_chats[other.id] = {
-                'user': other,
-                'last_message': chat.message,
-                'timestamp': chat.created_at
-            }
+    chat_partners = {}
+    for chat in chats:
+        partner = chat.sender if chat.sender != user else chat.receiver
+        if partner:  # 글로벌 채팅의 경우 partner가 None일 수 있음
+            if partner.id not in chat_partners or chat.created_at > chat_partners[partner.id]['last_message_time']:
+                chat_partners[partner.id] = {
+                    'user': partner,
+                    'last_message': chat.message,
+                    'last_message_time': chat.created_at
+                }
+
+    # 최신 메시지 순으로 정렬
+    sorted_partners = sorted(chat_partners.values(), 
+                           key=lambda x: x['last_message_time'], 
+                           reverse=True)
 
     context = {
-        'chat_partners': latest_chats.values()
+        'chat_partners': sorted_partners,
+        'user': user
     }
+
     return render(request, 'chat/chat_list.html', context)
+
+@login_required
+def global_chat_view(request):
+    chats = Chat.objects.filter(receiver__isnull=True).order_by('created_at')  # 전체 채팅만
+    return render(request, 'chat/global_chat.html', {
+        'user_id': request.user.id,
+        'chats': chats,
+    })

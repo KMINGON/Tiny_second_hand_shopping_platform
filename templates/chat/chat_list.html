@@ -11,7 +11,7 @@
           <strong>{{ chat.user.username }}</strong><br>
           <small class="text-muted">{{ chat.last_message|truncatechars:30 }}</small>
         </div>
-        <small>{{ chat.timestamp|date:"Y-m-d H:i" }}</small>
+        <small>{{ chat.last_message_time|date:"Y-m-d H:i" }}</small>
       </a>
     {% empty %}
       <li class="list-group-item">대화한 사용자가 없습니다.</li>
