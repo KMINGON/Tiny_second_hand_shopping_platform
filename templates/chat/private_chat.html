@@ -19,8 +19,8 @@
 </div>
 
 <script>
-  const senderId = {{ user.id }};
-  const receiverId = {{ target_user.id }};
+  const senderId = parseInt('{{ user.id }}');
+  const receiverId = parseInt('{{ target_user.id }}');
   const roomName = '1to1_' + [senderId, receiverId].sort().join('_');
 
   const chatSocket = new WebSocket(
