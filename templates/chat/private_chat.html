@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}{{ target_user.username }}님과의 채팅{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3>{{ target_user.username }}님과의 채팅</h3>
+
+  <div class="border p-3 mb-3" style="max-height: 400px; overflow-y: auto;">
+    {% for chat in chats %}
+      {% if chat.sender == user %}
+        <div class="text-end text-primary mb-2">
+          나: {{ chat.message }}
+        </div>
+      {% else %}
+        <div class="text-start text-secondary mb-2">
+          {{ target_user.username }}: {{ chat.message }}
+        </div>
+      {% endif %}
+    {% empty %}
+      <p>채팅 내역이 없습니다.</p>
+    {% endfor %}
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="input-group">
+      <input type="text" name="message" class="form-control" placeholder="메시지 입력...">
+      <button class="btn btn-primary">보내기</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
