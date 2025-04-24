@@ -27,13 +27,16 @@ def private_chat_view(request, user_id):
             )
             return redirect('private_chat', user_id=target_user.id)
 
+    # 이전 채팅 내역 불러오기
     chats = Chat.objects.filter(
         (models.Q(sender=request.user, receiver=target_user) |
          models.Q(sender=target_user, receiver=request.user))
-    )
+    ).order_by('created_at')  # 시간순 정렬
 
-    return render(request, 'chat/private_chat.html', {
+    context = {
         'target_user': target_user,
-        'chats': chats
-    })
+        'chats': chats,
+        'user': request.user  # 현재 사용자 정보도 전달
+    }
 
+    return render(request, 'chat/private_chat.html', context)

@@ -1,32 +1,59 @@
 {% extends 'base.html' %}
-{% block title %}{{ target_user.username }}님과의 채팅{% endblock %}
+{% block title %}실시간 채팅{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
   <h3>{{ target_user.username }}님과의 채팅</h3>
-
-  <div class="border p-3 mb-3" style="max-height: 400px; overflow-y: auto;">
+  <div id="chat-log" class="border p-3 mb-3" style="max-height: 300px; overflow-y: auto;">
     {% for chat in chats %}
       {% if chat.sender == user %}
-        <div class="text-end text-primary mb-2">
-          나: {{ chat.message }}
-        </div>
+        <div>나: {{ chat.message }}</div>
       {% else %}
-        <div class="text-start text-secondary mb-2">
-          {{ target_user.username }}: {{ chat.message }}
-        </div>
+        <div>{{ target_user.username }}: {{ chat.message }}</div>
       {% endif %}
-    {% empty %}
-      <p>채팅 내역이 없습니다.</p>
     {% endfor %}
   </div>
 
-  <form method="post">
-    {% csrf_token %}
-    <div class="input-group">
-      <input type="text" name="message" class="form-control" placeholder="메시지 입력...">
-      <button class="btn btn-primary">보내기</button>
-    </div>
-  </form>
+  <input id="chat-message-input" type="text" class="form-control mb-2" placeholder="메시지를 입력하세요">
+  <button id="chat-message-submit" class="btn btn-primary">보내기</button>
 </div>
+
+<script>
+  const senderId = {{ user.id }};
+  const receiverId = {{ target_user.id }};
+  const roomName = '1to1_' + [senderId, receiverId].sort().join('_');
+
+  const chatSocket = new WebSocket(
+    'ws://' + window.location.host + '/ws/chat/1to1/' + roomName + '/'
+  );
+
+  chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const message = data.message;
+    const sender = data.sender_id;
+    const log = document.querySelector('#chat-log');
+    const prefix = sender == senderId ? "나: " : "{{ target_user.username }}: ";
+    log.innerHTML += `<div>${prefix}${message}</div>`;
+    log.scrollTop = log.scrollHeight;
+  };
+
+  document.querySelector('#chat-message-submit').onclick = function() {
+    const input = document.querySelector('#chat-message-input');
+    const message = input.value;
+    if (message) {
+      chatSocket.send(JSON.stringify({
+        'message': message,
+        'sender_id': senderId,
+        'receiver_id': receiverId
+      }));
+      input.value = '';
+    }
+  };
+
+  // 페이지 로드 시 스크롤을 맨 아래로 이동
+  window.onload = function() {
+    const log = document.querySelector('#chat-log');
+    log.scrollTop = log.scrollHeight;
+  };
+</script>
 {% endblock %}

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'chat',
     'reports',
     'core',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -136,3 +137,10 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+ASGI_APPLICATION = 'market.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
