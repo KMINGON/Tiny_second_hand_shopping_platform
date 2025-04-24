@@ -1,6 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import SignupForm
 from django.contrib.auth.decorators import login_required
+from .models import CustomUser
+from products.models import Product
+from chat.models import Chat
+from django.db.models import Q
 
 def signup_view(request):
     if request.method == 'POST':
@@ -31,3 +35,14 @@ def mypage_view(request):
         user.save()
         return redirect('mypage')
     return render(request, 'accounts/mypage.html', {'user': user})
+
+@login_required
+def user_profile(request, user_id):
+    target_user = get_object_or_404(CustomUser, id=user_id)
+    user_products = Product.objects.filter(user=target_user).order_by('-created_at')
+    
+    context = {
+        'target_user': target_user,
+        'user_products': user_products,
+    }
+    return render(request, 'accounts/user_profile.html', context)

@@ -15,14 +15,14 @@
       <a class="navbar-brand" href="/">🏪 중고거래</a>
       <div class="d-flex">
         {% if user.is_authenticated %}
-            <form method="post" action="{% url 'logout' %}" class="me-3">    
+            <form method="post" action="{% url 'accounts:logout' %}" class="me-3">    
                 {% csrf_token %}
-                <button type="submit" class="btn btn-link nav-link px-3">로그아웃</button>
+                <button type="submit" class="btn btn-outline-danger">로그아웃</button>
             </form>
-            <a href="{% url 'mypage' %}" class="nav-link px-2">{{ user.username }} 님</a>
+            <a href="{% url 'accounts:mypage' %}" class="nav-link px-2">{{ user.username }} 님</a>
         {% else %}
-            <a class="nav-link me-2" href="/accounts/login/">로그인</a>
-            <a class="nav-link" href="/accounts/signup/">회원가입</a>
+            <a class="nav-link me-2" href="{% url 'accounts:login' %}">로그인</a>
+            <a class="nav-link" href="{% url 'accounts:signup' %}">회원가입</a>
         {% endif %}
       </div>
     </div>

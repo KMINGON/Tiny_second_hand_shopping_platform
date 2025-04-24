@@ -7,27 +7,22 @@ from .models import UserReport, ChatReport
 from chat.models import Chat
 
 @login_required
+@require_POST
 def report_user_view(request, user_id):
-    reported_user = get_object_or_404(CustomUser, id=user_id)
-    
-    if request.method == 'POST':
-        reason = request.POST.get('reason')
-        if reason:
-            # 중복 신고 방지
-            if UserReport.objects.filter(reporter=request.user, reported_user=reported_user).exists():
-                messages.warning(request, '이미 신고한 사용자입니다.')
-            else:
-                UserReport.objects.create(
-                    reporter=request.user,
-                    reported_user=reported_user,
-                    reason=reason
-                )
-                messages.success(request, '신고가 접수되었습니다.')
-            return redirect('profile', user_id=user_id)
-    
-    return render(request, 'reports/report_user.html', {
-        'reported_user': reported_user
-    })
+    target_user = get_object_or_404(CustomUser, id=user_id)
+
+    if request.user == target_user:
+        messages.error(request, "자기 자신은 신고할 수 없습니다.")
+        return redirect('/')
+
+    if UserReport.objects.filter(reporter=request.user, reported_user=target_user).exists():
+        messages.warning(request, "이미 신고한 사용자입니다.")
+    else:
+        reason = request.POST.get('reason', '')
+        UserReport.objects.create(reporter=request.user, reported_user=target_user, reason=reason)
+        messages.success(request, "신고가 접수되었습니다.")
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required
 def report_chat_view(request, message_id):

@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}내 신고 목록{% endblock %}
+{% block title %}내 채팅 신고 목록{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-  <h3 class="mb-4">내 신고 목록</h3>
+  <h3 class="mb-4">내 채팅 신고 목록</h3>
+
   <div class="table-responsive">
     <table class="table table-hover">
       <thead>
@@ -14,7 +15,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for report in reports %}
+        {% for report in chat_reports %}
           <tr>
             <td>
               <strong>{{ report.message.sender.username }}</strong>: 
@@ -25,7 +26,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="3" class="text-center">신고한 내역이 없습니다.</td>
+            <td colspan="3" class="text-center">채팅 신고 내역이 없습니다.</td>
           </tr>
         {% endfor %}
       </tbody>

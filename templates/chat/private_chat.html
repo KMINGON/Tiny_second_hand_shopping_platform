@@ -16,11 +16,11 @@
           {% if chat.sender == user %}
             <strong>나</strong>: {{ chat.message }}
           {% else %}
-            <strong>{{ target_user.username }}</strong>: {{ chat.message }}
+            <strong><a href="{% url 'accounts:user_profile' user_id=chat.sender.id %}">{{ chat.sender.username }}</a></strong>: {{ chat.message }}
           {% endif %}
         </div>
         {% if chat.sender != user %}
-          <button class="btn btn-sm btn-outline-danger report-btn" data-chat-id="{{ chat.id }}" data-bs-toggle="modal" data-bs-target="#reportModal">
+          <button class="btn btn-sm btn-outline-danger report-btn" data-message-id="{{ chat.id }}" data-bs-toggle="modal" data-bs-target="#reportModal">
             신고
           </button>
         {% endif %}

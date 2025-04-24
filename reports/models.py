@@ -9,11 +9,14 @@ class UserReport(models.Model):
     reported_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('reporter', 'reported_user')
+        unique_together = ('reporter', 'reported_user')  # 중복 신고 방지
+
+    def __str__(self):
+        return f"{self.reporter.username} → {self.reported_user.username}"
 
 class ChatReport(models.Model):
-    reporter = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    message = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    reporter = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='reports_chatreport')
+    message = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='reports_chatreport')
     reason = models.TextField(blank=True)
     reported_at = models.DateTimeField(auto_now_add=True)
 
