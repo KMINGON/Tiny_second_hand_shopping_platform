@@ -9,3 +9,12 @@ class Chat(models.Model):
 
     class Meta:
         ordering = ['created_at']
+
+class ChatReport(models.Model):
+    reporter = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    reason = models.TextField(blank=True)
+    reported_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('reporter', 'message')  # 동일 사용자의 중복 신고 방지

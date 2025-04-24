@@ -3,19 +3,68 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h3>{{ target_user.username }}님과의 채팅</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>{{ target_user.username }}님과의 채팅</h3>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
+      신고하기
+    </button>
+  </div>
   <div id="chat-log" class="border p-3 mb-3" style="max-height: 300px; overflow-y: auto;">
     {% for chat in chats %}
-      {% if chat.sender == user %}
-        <div>나: {{ chat.message }}</div>
-      {% else %}
-        <div>{{ target_user.username }}: {{ chat.message }}</div>
-      {% endif %}
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          {% if chat.sender == user %}
+            <strong>나</strong>: {{ chat.message }}
+          {% else %}
+            <strong>{{ target_user.username }}</strong>: {{ chat.message }}
+          {% endif %}
+        </div>
+        {% if chat.sender != user %}
+          <button class="btn btn-sm btn-outline-danger report-btn" data-chat-id="{{ chat.id }}" data-bs-toggle="modal" data-bs-target="#reportModal">
+            신고
+          </button>
+        {% endif %}
+      </div>
     {% endfor %}
   </div>
 
   <input id="chat-message-input" type="text" class="form-control mb-2" placeholder="메시지를 입력하세요">
   <button id="chat-message-submit" class="btn btn-primary">보내기</button>
+</div>
+
+<!-- 신고 모달 -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">신고하기</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="reportForm" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+          <input type="hidden" name="chat_id" id="report_chat_id">
+          <div class="mb-3">
+            <label for="report_type" class="form-label">신고 유형</label>
+            <select class="form-select" id="report_type" name="report_type" required>
+              <option value="spam">스팸/홍보</option>
+              <option value="abuse">욕설/비방</option>
+              <option value="inappropriate">부적절한 내용</option>
+              <option value="other">기타</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">신고 사유</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+          <button type="submit" class="btn btn-danger">신고하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -55,5 +104,13 @@
     const log = document.querySelector('#chat-log');
     log.scrollTop = log.scrollHeight;
   };
+
+  // 신고 버튼 클릭 시 채팅 ID 설정
+  document.querySelectorAll('.report-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      document.getElementById('report_chat_id').value = this.dataset.chatId;
+      document.getElementById('reportForm').action = `{% url 'chat:report_chat' 0 %}`.replace('0', this.dataset.chatId);
+    });
+  });
 </script>
 {% endblock %}

@@ -24,7 +24,7 @@ urlpatterns = [
     path('', include('core.urls')),                   # 메인 홈 화면
     path('accounts/', include('accounts.urls')),      # 회원 기능
     path('products/', include('products.urls')),      # 상품 기능
-    path('chat/', include('chat.urls')),              # 채팅 기능
+    path('chat/', include('chat.urls', namespace='chat')),  # 채팅 기능
     path('reports/', include('reports.urls')),        # 신고 기능
 ]
 

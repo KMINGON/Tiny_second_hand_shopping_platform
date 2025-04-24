@@ -3,10 +3,13 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h3 class="mb-4">채팅 목록</h3>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>채팅 목록</h3>
+    <a href="{% url 'chat:my_reports' %}" class="btn btn-outline-danger">내 신고 목록</a>
+  </div>
   <ul class="list-group">
     {% for chat in chat_partners %}
-      <a href="{% url 'private_chat' chat.user.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+      <a href="{% url 'chat:private_chat' chat.user.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
         <div>
           <strong>{{ chat.user.username }}</strong><br>
           <small class="text-muted">{{ chat.last_message|truncatechars:30 }}</small>

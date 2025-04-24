@@ -4,6 +4,9 @@ from .models import Chat
 from accounts.models import CustomUser
 from django.db.models import Q
 from django.db import models
+from .models import ChatReport
+from django.contrib import messages
+from django.views.decorators.http import require_POST
 
 def global_chat_view(request):
     return render(request, 'chat/global.html')
@@ -77,4 +80,31 @@ def global_chat_view(request):
     return render(request, 'chat/global_chat.html', {
         'user_id': request.user.id,
         'chats': chats,
+    })
+
+@login_required
+@require_POST
+def report_chat_view(request, message_id):
+    message = get_object_or_404(Chat, id=message_id)
+    report_type = request.POST.get('report_type')
+    description = request.POST.get('description', '')
+
+    # 중복 신고 방지
+    if ChatReport.objects.filter(reporter=request.user, message=message).exists():
+        messages.warning(request, '이미 신고한 메시지입니다.')
+    else:
+        ChatReport.objects.create(
+            reporter=request.user,
+            message=message,
+            reason=f"[{report_type}] {description}"  # 신고 유형과 사유를 합쳐서 저장
+        )
+        messages.success(request, '신고가 접수되었습니다.')
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def my_reports_view(request):
+    reports = ChatReport.objects.filter(reporter=request.user).order_by('-reported_at')
+    return render(request, 'chat/my_reports.html', {
+        'reports': reports
     })

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}내 신고 목록{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3 class="mb-4">내 신고 목록</h3>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>신고한 메시지</th>
+          <th>신고 사유</th>
+          <th>신고 시간</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for report in reports %}
+          <tr>
+            <td>
+              <strong>{{ report.message.sender.username }}</strong>: 
+              {{ report.message.message|truncatechars:50 }}
+            </td>
+            <td>{{ report.reason }}</td>
+            <td>{{ report.reported_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">신고한 내역이 없습니다.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %} 
