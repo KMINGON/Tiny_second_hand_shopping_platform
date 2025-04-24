@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}내 채팅 목록{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3 class="mb-4">채팅 목록</h3>
+  <ul class="list-group">
+    {% for chat in chat_partners %}
+      <a href="{% url 'private_chat' chat.user.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ chat.user.username }}</strong><br>
+          <small class="text-muted">{{ chat.last_message|truncatechars:30 }}</small>
+        </div>
+        <small>{{ chat.timestamp|date:"Y-m-d H:i" }}</small>
+      </a>
+    {% empty %}
+      <li class="list-group-item">대화한 사용자가 없습니다.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

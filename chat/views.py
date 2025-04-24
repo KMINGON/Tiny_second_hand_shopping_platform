@@ -40,3 +40,25 @@ def private_chat_view(request, user_id):
     }
 
     return render(request, 'chat/private_chat.html', context)
+
+@login_required
+def chat_list_view(request):
+    user = request.user
+    # 내가 주고받은 모든 채팅
+    chats = Chat.objects.filter(Q(sender=user) | Q(receiver=user))
+
+    # 상대방 ID 기준 마지막 메시지 시간 기준 정렬
+    latest_chats = {}
+    for chat in chats.order_by('-created_at'):
+        other = chat.receiver if chat.sender == user else chat.sender
+        if other.id not in latest_chats:
+            latest_chats[other.id] = {
+                'user': other,
+                'last_message': chat.message,
+                'timestamp': chat.created_at
+            }
+
+    context = {
+        'chat_partners': latest_chats.values()
+    }
+    return render(request, 'chat/chat_list.html', context)
