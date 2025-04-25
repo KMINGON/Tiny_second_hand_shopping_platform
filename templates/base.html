@@ -15,17 +15,61 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm">
     <div class="container">
       <a class="navbar-brand" href="/">🏪 중고거래</a>
-      <div class="d-flex">
-        {% if user.is_authenticated %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'products:product_list' %}">
+              <i class="fas fa-store"></i> 상품 목록
+            </a>
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="chatDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-comments"></i> 채팅
+              {% if unread_messages %}
+              <span class="badge bg-danger">New</span>
+              {% endif %}
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="{% url 'chat:chat_list' %}">
+                  <i class="fas fa-list"></i> 채팅 목록
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="{% url 'chat:global_chat' %}">
+                  <i class="fas fa-globe"></i> 전체 채팅
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+        </ul>
+        
+        <div class="d-flex align-items-center">
+          {% if user.is_authenticated %}
             <form method="post" action="{% url 'accounts:logout' %}" class="me-3">    
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-danger">로그아웃</button>
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger">
+                <i class="fas fa-sign-out-alt"></i> 로그아웃
+              </button>
             </form>
-            <a href="{% url 'accounts:mypage' %}" class="nav-link px-2">{{ user.username }} 님</a>
-        {% else %}
-            <a class="nav-link me-2" href="{% url 'accounts:login' %}">로그인</a>
-            <a class="nav-link" href="{% url 'accounts:signup' %}">회원가입</a>
-        {% endif %}
+            <a href="{% url 'accounts:mypage' %}" class="nav-link px-2">
+              <i class="fas fa-user"></i> {{ user.username }} 님
+            </a>
+          {% else %}
+            <a class="nav-link me-2" href="{% url 'accounts:login' %}">
+              <i class="fas fa-sign-in-alt"></i> 로그인
+            </a>
+            <a class="nav-link" href="{% url 'accounts:signup' %}">
+              <i class="fas fa-user-plus"></i> 회원가입
+            </a>
+          {% endif %}
+        </div>
       </div>
     </div>
   </nav>
