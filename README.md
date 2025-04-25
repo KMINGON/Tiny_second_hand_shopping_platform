@@ -1,87 +1,128 @@
-# Tiny_second_hand_shopping_platform
-WHS 시큐어 코딩 과제
+# Tiny Second-hand Shopping Platform
 
-# 🛍️ Tiny Second-hand Shopping Platform
+안전하고 편리한 중고거래를 위한 웹 플랫폼입니다.
 
-Django 기반의 시큐어코딩 실습형 중고거래 플랫폼입니다.  
-기능별 앱 분리 및 보안 요소 반영을 통해 실제 서비스 수준의 구조를 갖춘 웹 애플리케이션을 목표로 합니다.
+## 주요 기능
 
----
+- 상품 등록 및 관리
+- 실시간 채팅 기능
+- 사용자 인증 및 권한 관리
+- 상품 검색 및 필터링
+- 신고 시스템
 
-# 🧱 프로젝트 폴더 구조 (Tree)
+## 프로젝트 구조
 
 ```
-
 tiny_second_hand_shopping_platform/
-├── accounts/        사용자 인증 (회원가입, 로그인, 마이페이지 등)
-├── products/        상품 등록, 조회, 상세보기 기능
-├── chat/            전체 채팅, 1:1 채팅 기능
-├── reports/         사용자 및 상품 신고 기능
-├── core/            메인 홈, 공통 페이지
-├── market/          Django 프로젝트 설정 (settings, urls 등)
-├── templates/       HTML 템플릿
-│   ├── index.html
-│   ├── accounts/
-│   ├── products/
-│   ├── chat/
-│   ├── reports/ 
-├── static/          CSS, JS 등 정적 파일
-├── media/           업로드 이미지 저장소
-├── db.sqlite3       SQLite 데이터베이스
-├── manage.py        Django 명령어 실행 파일
-└── venv/            가상환경 디렉토리 (보통 .gitignore 대상)
-
+├── accounts/          # 사용자 인증 및 계정 관리
+├── chat/             # 실시간 채팅 기능
+├── core/             # 핵심 기능 및 설정
+├── market/           # 프로젝트 메인 설정
+├── products/         # 상품 관련 기능
+├── reports/          # 신고 시스템
+├── static/           # 정적 파일 (CSS, JS, 이미지)
+├── staticfiles/      # 수집된 정적 파일
+├── templates/        # HTML 템플릿
+└── media/            # 사용자가 업로드한 파일
 ```
----
 
-## 🔗 URL → View → Template 매핑
+## 기술 스택
 
-| URL 경로 | View 함수 | 템플릿 파일 | 설명 |
-|----------|-----------|--------------|------|
-| `/` | `core.views.index_view` | `templates/index.html` | 메인 홈화면 |
-| `/accounts/signup/` | `accounts.views.signup_view` | `accounts/signup.html` | 회원가입 |
-| `/accounts/login/` | `accounts.views.login_view` | `accounts/login.html` | 로그인 |
-| `/accounts/logout/` | `accounts.views.logout_view` | `accounts/logout.html` | 로그아웃 |
-| `/accounts/mypage/` | `accounts.views.mypage_view` | `accounts/mypage.html` | 마이페이지 |
-| `/products/` | `products.views.product_list_view` | `products/list.html` | 상품 목록 |
-| `/products/new/` | `products.views.product_create_view` | `products/create.html` | 상품 등록 |
-| `/products/<id>/` | `products.views.product_detail_view` | `products/detail.html` | 상품 상세 |
-| `/chat/global/` | `chat.views.global_chat_view` | `chat/global.html` | 전체 채팅방 |
-| `/chat/user/<id>/` | `chat.views.private_chat_view` | `chat/private.html` | 1:1 채팅 |
-| `/reports/` | `reports.views.report_create_view` | `reports/create.html` | 신고 페이지 |
+- Python 3.12
+- Django 5.0
+- SQLite3
+- Bootstrap 5
+- Font Awesome
 
----
+## 설치 및 실행 방법
 
-## 🧩 앱별 역할 및 의존성
-
-| 앱 | 기능 | 주요 역할 |
-|----|------|-----------|
-| `accounts` | 사용자 인증 | 회원가입, 로그인, 마이페이지, 세션 |
-| `products` | 상품 관리 | DB 모델, 업로드 이미지, 상태관리 |
-| `chat` | 실시간 채팅 | 전체 채팅방, 1:1 채팅 구조 |
-| `reports` | 신고 시스템 | 유저/상품 신고 처리, 제재 로직 |
-| `core` | 공용 뷰 | 홈페이지(index), 관리자 화면 등 |
-| `market` | 프로젝트 설정 | `settings.py`, `urls.py`, 앱 등록 등 |
-
----
-
-## ✅ 개발 체크포인트
-
-- [x] Django 프로젝트 및 앱 구조 설정
-- [x] URL 라우팅 및 템플릿 연결
-- [x] `index.html` 연결 성공
-- [ ] 기능별 View/Model/Template 구성
-- [ ] 보안 요소 반영 (CSRF, XSS, 인증, 파일 업로드 제한 등)
-- [ ] 관리자 페이지 설정
-
----
-
-## 📌 실행 방법
-
+1. 가상환경 생성 및 활성화
 ```bash
-# 1. 가상환경 실행
-source venv/bin/activate
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# 또는
+.\venv\Scripts\activate  # Windows
+```
 
-# 2. 서버 실행
-python manage.py runserver
-접속 주소: http://127.0.0.1:8000
+2. 의존성 설치
+```bash
+pip install -r requirements.txt
+```
+
+3. 데이터베이스 마이그레이션
+```bash
+python manage.py migrate
+```
+
+4. 개발 서버 실행
+```bash
+python DJANGO_SETTINGS_MODULE=market.settings daphne market.asgi:application
+```
+
+## URL 매핑
+
+- 메인 페이지: `/`
+- 상품 관련:
+  - 상품 목록: `/products/`
+  - 상품 상세: `/products/<int:pk>/`
+  - 상품 등록: `/products/create/`
+  - 상품 수정: `/products/<int:pk>/edit/`
+  - 상품 삭제: `/products/<int:pk>/delete/`
+- 계정 관련:
+  - 로그인: `/accounts/login/`
+  - 회원가입: `/accounts/signup/`
+  - 로그아웃: `/accounts/logout/`
+  - 프로필: `/accounts/profile/`
+- 채팅 관련:
+  - 채팅 목록: `/chat/`
+  - 채팅방: `/chat/<int:room_id>/`
+- 신고 관련:
+  - 신고하기: `/reports/create/`
+  - 신고 목록: `/reports/`
+
+## 주요 기능 설명
+
+### 상품 관리
+- 상품 등록, 수정, 삭제 기능
+- 상품 이미지 업로드
+- 상품 상태 관리 (판매중, 예약중, 판매완료)
+- 상품 검색 및 필터링
+
+### 실시간 채팅
+- 판매자와 구매자 간의 실시간 채팅
+- 채팅방 목록 관리
+- 읽지 않은 메시지 알림
+
+### 사용자 관리
+- 회원가입 및 로그인
+- 프로필 관리
+- 권한에 따른 기능 제한
+
+### 신고 시스템
+- 부적절한 상품 신고
+- 부적절한 사용자 신고
+- 신고 처리 상태 관리
+
+## 개발 환경 설정
+
+1. `.env` 파일 생성
+```bash
+cp .env.example .env
+```
+
+2. 환경 변수 설정
+```
+DEBUG=True
+SECRET_KEY=your-secret-key
+```
+
+## 기여 방법
+
+1. 이슈 생성
+2. 브랜치 생성
+3. 코드 수정
+4. Pull Request 생성
+
+## 라이센스
+
+MIT License
