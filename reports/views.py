@@ -21,6 +21,7 @@ def report_user_view(request, user_id):
     else:
         reason = request.POST.get('reason', '')
         UserReport.objects.create(reporter=request.user, reported_user=target_user, reason=reason)
+        auto_block_user(target_user)  # ✅ 자동 제재 호출
         messages.success(request, "신고가 접수되었습니다.")
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
@@ -40,6 +41,7 @@ def report_chat_view(request, message_id):
             message=message,
             reason=f"[{report_type}] {description}"  # 신고 유형과 사유를 합쳐서 저장
         )
+        auto_blind_message(message)  # ✅ 자동 블라인드 호출
         messages.success(request, '신고가 접수되었습니다.')
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
@@ -72,6 +74,29 @@ def report_product_view(request, product_id):
             reported_product=product,
             reason=f"[{report_type}] {description}"
         )
+        auto_hide_product(product)  # ✅ 자동 숨김 호출
         messages.success(request, '신고가 접수되었습니다.')
 
     return redirect('products:product_detail', id=product.id)
+
+# 사용자 제재
+def auto_block_user(user, threshold=2):
+    report_count = UserReport.objects.filter(reported_user=user).count()
+    if report_count >= threshold and user.is_active:
+        user.is_active = False
+        user.save()
+
+# 상품 숨김
+def auto_hide_product(product, threshold=2):
+    report_count = ProductReport.objects.filter(reported_product=product).count()
+    if report_count >= threshold and not product.is_hidden:
+        product.is_hidden = True
+        product.save()
+
+# 채팅 메시지 블라인드
+def auto_blind_message(message, threshold=2):
+    report_count = ChatReport.objects.filter(message=message).count()
+    if report_count >= threshold and not message.is_hidden:
+        message.is_hidden = True
+        message.save()
+

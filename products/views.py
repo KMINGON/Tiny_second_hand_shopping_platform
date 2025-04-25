@@ -10,7 +10,10 @@ def product_list_view(request):
     query = request.GET.get('q', '')
     mine = request.GET.get('mine') == 'on'
 
-    products = Product.objects.all()
+    # 숨김 처리되지 않은 상품만 표시
+    products = Product.objects.filter(is_hidden=False)
+    # 활성화된 사용자의 상품만 표시
+    products = products.filter(user__is_active=True)
 
     if query:
         products = products.filter(
@@ -29,6 +32,9 @@ def product_list_view(request):
 
 @login_required
 def product_create_view(request):
+    # 비활성화된 사용자는 상품 등록 불가
+    if not request.user.is_active:
+        return HttpResponseForbidden("비활성화된 계정입니다.")
     if request.method == 'POST':
         form = ProductForm(request.POST)
         image_form = ProductImageForm(request.POST, request.FILES)
@@ -52,6 +58,9 @@ def product_create_view(request):
 
 def product_detail_view(request, id):
     product = get_object_or_404(Product, id=id)
+    # 숨김 처리되었거나 비활성화된 사용자의 상품인 경우 404
+    if product.is_hidden or not product.user.is_active:
+        return render(request, '404.html', status=404)
     return render(request, 'products/product_detail.html', {'product': product})
 
 @login_required

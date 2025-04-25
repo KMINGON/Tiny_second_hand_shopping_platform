@@ -6,6 +6,7 @@ class Chat(models.Model):
     receiver = models.ForeignKey(CustomUser, related_name='received_messages', on_delete=models.CASCADE, null=True, blank=True)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_hidden = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['created_at']

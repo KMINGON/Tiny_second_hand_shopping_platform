@@ -7,6 +7,7 @@ from django.db import models
 from reports.models import ChatReport
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.http import HttpResponseForbidden
 
 def global_chat_view(request):
     return render(request, 'chat/global.html')
@@ -16,6 +17,10 @@ def global_chat_view(request):
 @login_required
 def private_chat_view(request, user_id):
     target_user = get_object_or_404(CustomUser, id=user_id)
+
+    # 비활성화된 사용자와의 채팅 불가
+    if not target_user.is_active:
+        return HttpResponseForbidden("비활성화된 사용자입니다.")
 
     if request.user == target_user:
         return redirect('/')  # 자기 자신과 채팅 방지
@@ -30,16 +35,17 @@ def private_chat_view(request, user_id):
             )
             return redirect('private_chat', user_id=target_user.id)
 
-    # 이전 채팅 내역 불러오기
+    # 숨김 처리되지 않은 채팅만 표시
     chats = Chat.objects.filter(
         (models.Q(sender=request.user, receiver=target_user) |
-         models.Q(sender=target_user, receiver=request.user))
-    ).order_by('created_at')  # 시간순 정렬
+         models.Q(sender=target_user, receiver=request.user)),
+        is_hidden=False
+    ).order_by('created_at')
 
     context = {
         'target_user': target_user,
         'chats': chats,
-        'user': request.user  # 현재 사용자 정보도 전달
+        'user': request.user
     }
 
     return render(request, 'chat/private_chat.html', context)
@@ -47,14 +53,17 @@ def private_chat_view(request, user_id):
 @login_required
 def chat_list_view(request):
     user = request.user
-    # 내가 주고받은 모든 채팅
-    chats = Chat.objects.filter(Q(sender=user) | Q(receiver=user))
+    # 숨김 처리되지 않은 채팅만 표시
+    chats = Chat.objects.filter(
+        (Q(sender=user) | Q(receiver=user)),
+        is_hidden=False
+    )
 
-    # 상대방 ID 기준 마지막 메시지 시간 기준 정렬
+    # 활성화된 사용자의 채팅만 표시
     chat_partners = {}
     for chat in chats:
         partner = chat.sender if chat.sender != user else chat.receiver
-        if partner:  # 글로벌 채팅의 경우 partner가 None일 수 있음
+        if partner and partner.is_active:  # 글로벌 채팅과 비활성화된 사용자 제외
             if partner.id not in chat_partners or chat.created_at > chat_partners[partner.id]['last_message_time']:
                 chat_partners[partner.id] = {
                     'user': partner,
@@ -76,7 +85,13 @@ def chat_list_view(request):
 
 @login_required
 def global_chat_view(request):
-    chats = Chat.objects.filter(receiver__isnull=True).order_by('created_at')  # 전체 채팅만
+    # 숨김 처리되지 않은 글로벌 채팅만 표시
+    chats = Chat.objects.filter(
+        receiver__isnull=True,
+        is_hidden=False,
+        sender__is_active=True  # 활성화된 사용자의 메시지만 표시
+    ).order_by('created_at')
+    
     return render(request, 'chat/global_chat.html', {
         'user_id': request.user.id,
         'chats': chats,
